@@ -1,4 +1,5 @@
 "use client";
+import axios from "axios";
 import Button from "@/app/components/inputs/button";
 import Input from "@/app/components/inputs/input";
 import { useState, useCallback } from "react";
@@ -34,7 +35,7 @@ const AuthForm = () => {
           setIsLoading(true);
 
           if (variant === "REGISTER") {
-               // TODO: Axios Register
+               axios.post("/api/register", data);
           }
 
           if (variant === "REGISTER") {
