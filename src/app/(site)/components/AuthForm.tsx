@@ -66,9 +66,18 @@ const AuthForm = () => {
 
      const socialActions = (action: string) => {
           setIsLoading(true);
-          toast.success("Success");
-
-          // TODO: NextAuth Social Sign in
+          signIn(action, {redirect: false})
+          .then((result) => {
+               if(result?.error){
+                    toast.error("Something went wrong, Try Again!")
+               }
+               if(result?.ok){
+                    toast.success("Logged in successfully");
+               }
+          }).catch(() => {
+               toast.error("Something went wrong, Try Again!")
+          })
+          .finally(() => setIsLoading(false))
      };
 
      return (
@@ -97,7 +106,7 @@ const AuthForm = () => {
 
                          <div className="mt-6 flex gap-2">
                               <AuthSocialButton icon={BsGithub} onClick={() => socialActions("github")} />
-                              <AuthSocialButton icon={BsGoogle} onClick={() => socialActions("github")} />
+                              <AuthSocialButton icon={BsGoogle} onClick={() => socialActions("google")} />
                          </div>
                     </div>
                     <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
