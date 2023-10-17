@@ -2,18 +2,29 @@
 import axios from "axios";
 import Button from "@/app/components/inputs/button";
 import Input from "@/app/components/inputs/input";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import AuthSocialButton from "./AuthSocialButton";
 import { toast } from "sonner";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Variant = "LOGIN" | "REGISTER";
 
 const AuthForm = () => {
+     const router = useRouter()
+     const { status } = useSession()
      const [variant, setVariant] = useState<Variant>("LOGIN");
      const [isLoading, setIsLoading] = useState(false);
+
+     useEffect(() => {
+          console.log(status);
+
+          if (status === "authenticated") {
+               router.push("/users")
+          }
+     }, [status, router])
 
      const toggleVariant = useCallback(() => {
           if (variant === "LOGIN") {
@@ -36,12 +47,11 @@ const AuthForm = () => {
      });
 
      const onSubmit: SubmitHandler<FieldValues> = data => {
-          // console.log(data);
-
           setIsLoading(true);
 
           if (variant === "REGISTER") {
                axios.post("/api/register", data)
+                    .then(() => signIn("credentials", data))
                     .catch(() => toast.error("Something went wrong!"))
                     .finally(() => setIsLoading(false));
           }
@@ -57,27 +67,29 @@ const AuthForm = () => {
                          }
                          if (result?.ok) {
                               toast.success("Logged in successfully");
+                              router.push("/users")
                          }
                     })
-                    // .catch(() => toast.error("Failed to login"))
+                    .catch(() => toast.error("Failed to login"))
                     .finally(() => setIsLoading(false));
           }
      };
 
      const socialActions = (action: string) => {
           setIsLoading(true);
-          signIn(action, {redirect: false})
-          .then((result) => {
-               if(result?.error){
+          signIn(action, { redirect: false })
+               .then((result) => {
+                    if (result?.error) {
+                         toast.error("Something went wrong, Try Again!")
+                    }
+                    if (result?.ok) {
+                         toast.success("Logged in successfully");
+                         router.push("/users")
+                    }
+               }).catch(() => {
                     toast.error("Something went wrong, Try Again!")
-               }
-               if(result?.ok){
-                    toast.success("Logged in successfully");
-               }
-          }).catch(() => {
-               toast.error("Something went wrong, Try Again!")
-          })
-          .finally(() => setIsLoading(false))
+               })
+               .finally(() => setIsLoading(false))
      };
 
      return (
