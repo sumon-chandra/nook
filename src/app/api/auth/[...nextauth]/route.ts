@@ -8,7 +8,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/app/libs/prismadb";
 import { User } from "@prisma/client";
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
      adapter: PrismaAdapter(prisma),
      providers: [
           GithubProvider({
@@ -44,7 +44,7 @@ const authOptions: NextAuthOptions = {
                     if (!isCorrectPassword) {
                          throw new Error("Invalid credentials");
                     }
-                    
+
                     return user;
                },
           }),
