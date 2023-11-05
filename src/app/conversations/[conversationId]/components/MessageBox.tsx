@@ -15,7 +15,7 @@ interface MessageBoxProps {
 	data: FullMessageType;
 }
 
-const MessageBox: FC<MessageBoxProps> = ({ data }) => {
+const MessageBox: FC<MessageBoxProps> = ({ data, isLast }) => {
 	const session = useSession();
 	const { conversationId } = useConversation();
 	const isOwn = session?.data?.user?.email === data?.sender?.email;
@@ -65,6 +65,11 @@ const MessageBox: FC<MessageBoxProps> = ({ data }) => {
 						<div>{data.body}</div>
 					)}
 				</div>
+				{isLast && isOwn && seenList.length > 0 && (
+					<div className="text-xs font-light text-gray-500">
+						{`Seen by ${seenList}`}
+					</div>
+				)}
 			</div>
 		</div>
 	);
