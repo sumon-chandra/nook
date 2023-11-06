@@ -7,7 +7,7 @@ import { Transition, Dialog } from "@headlessui/react";
 import { Conversation, User } from "@prisma/client";
 import { format } from "date-fns";
 import Avatar from "@/app/components/Avatar";
-import Modal from "@/app/components/Modal";
+import ConfirmModal from "./ConfirmModal";
 
 interface ProfileDrawerProps {
 	data: Conversation & {
@@ -18,7 +18,7 @@ interface ProfileDrawerProps {
 }
 
 const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [confirmOpen, setConfirmOpen] = useState(false);
 	const otherUser = useOtherUser(data);
 	const joinedData = useMemo(() => {
 		return format(new Date(otherUser.createdAt), "PP");
@@ -37,9 +37,7 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
 
 	return (
 		<>
-			<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-				<p>Hello Modal</p>
-			</Modal>
+			<ConfirmModal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)} />
 			<Transition.Root show={isOpen} as={Fragment}>
 				<Dialog as="div" onClose={onClose} className="relative z-50">
 					<Transition.Child
@@ -89,7 +87,7 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
 													<div className="text-sm text-gray-500">{statusText}</div>
 													<div className="flex gap-10 my-8">
 														<div
-															onClick={() => setIsModalOpen(true)}
+															onClick={() => setConfirmOpen(true)}
 															className="flex flex-col gap-3 items-center cursor-pointer hover:opacity-75"
 														>
 															<div className="w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center">
