@@ -64,7 +64,7 @@ const ConversationBox: FC<ConversationBoxProps> = ({ data, selected }) => {
 			<div className="min-w-0 flex-1">
 				<div className="focus:outline-none">
 					<div className="flex justify-between items-center mb-1">
-						<p className="text-sm font-medium text-gray-900">
+						<p className="text-base font-medium text-gray-900">
 							{data.name || otherUser.name}
 						</p>
 						{lastMessage?.createdAt && (
