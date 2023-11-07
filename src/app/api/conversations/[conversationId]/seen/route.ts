@@ -1,5 +1,6 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb"
+import { pusherServer } from "@/app/libs/pusher";
 import { NextResponse } from 'next/server';
 
 interface IParams {
@@ -38,7 +39,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
             return NextResponse.json(conversation)
         }
 
-        const updateMessage = await prisma.message.update({
+        const updatedMessage = await prisma.message.update({
             where: {
                 id: lastMessage.id
             },
@@ -55,7 +56,18 @@ export async function POST(request: Request, { params }: { params: IParams }) {
             }
         })
 
-        return NextResponse.json(updateMessage)
+        await pusherServer.trigger(currentUser.email, "conversation:update", {
+            id: params.conversationId,
+            messages: [updatedMessage]
+        })
+
+        if (lastMessage.senderId.indexOf(currentUser.id) !== -1) {
+            return NextResponse.json(conversation)
+        }
+
+        await pusherServer.trigger(params.conversationId!, "message:update", updatedMessage)
+
+        return NextResponse.json(updatedMessage)
     } catch (error: any) {
         console.log(error, " ERROR_MESSAGES_SEEN");
         return new NextResponse('Internal Server Error', { status: 500 })
