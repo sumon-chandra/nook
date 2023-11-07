@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import Avatar from "@/app/components/Avatar";
 import ConfirmModal from "./ConfirmModal";
 import AvatarGroup from "@/app/components/AvatarGroup";
+import useActiveList from "@/app/hooks/useActiveList";
 
 interface ProfileDrawerProps {
 	data: Conversation & {
@@ -25,6 +26,9 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
 		return format(new Date(otherUser.createdAt), "PP");
 	}, [otherUser.createdAt]);
 
+	const { members } = useActiveList();
+	const isActive = members.indexOf(otherUser?.email!) !== -1;
+
 	const title = useMemo(() => {
 		return data.name || otherUser.name;
 	}, [data.name, otherUser.name]);
@@ -33,8 +37,8 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ data, isOpen, onClose }) => {
 		if (data.isGroup) {
 			return `${data.users.length} members`;
 		}
-		return "Active";
-	}, [data]);
+		return isActive ? "Online" : "Offline";
+	}, [data.isGroup, data.users.length, isActive]);
 
 	return (
 		<>
