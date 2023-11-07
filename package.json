@@ -26,6 +26,7 @@
     "react-hook-form": "^7.47.0",
     "react-icons": "^4.11.0",
     "react-select": "^5.8.0",
+    "react-spinners": "^0.13.8",
     "sonner": "^1.0.3"
   },
   "devDependencies": {
